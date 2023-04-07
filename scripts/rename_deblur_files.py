@@ -7,4 +7,5 @@ indir = r'/home/dendenmushi/ros1_ws/src/DSP-SLAM/data/lab_cars/1_deblurred_25/im
 fnames = glob.glob(indir + '*.png')
 print(fnames[:10])
 for fname in fnames:
+    # print(fname[:-11] + fname[-4:])
     shutil.move(fname, fname[:-11] + fname[-4:])
