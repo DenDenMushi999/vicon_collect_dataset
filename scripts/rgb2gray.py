@@ -5,8 +5,8 @@ from pathlib import Path
 import argparse
 import cv2 as cv
 
-in_dir = '/home/dendenmushi/ros1_ws/src/DSP-SLAM/data/lab_cars/1_synth_deblurred/image_2'
-out_dir = '/home/dendenmushi/ros1_ws/src/DSP-SLAM/data/lab_cars/1_synth_deblurred/image_0'
+in_dir = '/home/dendenmushi/ros1_ws/src/DSP-SLAM/data/lab_cars/4_deblurred_2/image_2'
+out_dir = '/home/dendenmushi/ros1_ws/src/DSP-SLAM/data/lab_cars/4_deblurred_2/image_0'
 
 in_dir = Path(in_dir)
 out_dir = Path(out_dir)
