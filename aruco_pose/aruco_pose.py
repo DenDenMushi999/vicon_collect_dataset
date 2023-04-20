@@ -46,17 +46,29 @@ if (ids.size > 0):
     cv.waitKey(2000)
 
     nMarkers = ids.size
+    aruco_pos_arr = []
+    aruco_rot_arr = []
     for i, c in enumerate(corners):
         retval, rvec, tvec = cv.solvePnP( aruco_pts, c, intrinsics, dist_coeffs)	
-
+        aruco_pos_arr.append(tvec)
+        aruco_rot_arr.append(rvec)
         # rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers( corners, 0.18, intrinsics, dist_coeffs )
-        print(tvec)
+        print(f'tvec: {tvec}, rvec: {rvec}')
         img_det = cv.drawFrameAxes(img_det, intrinsics, dist_coeffs, rvec, tvec, 0.1)
         # corners_galery_rel_galery = np.array([ [[galery_map_size[0] + padding_size], [galery_map_size[1] + padding_size], [0.]],
         #                                        [[-padding_size], [galery_map_size[1] + padding_size], [0.]],
         #                                        [[-padding_size], [-padding_size], [0.]],
         #                                        [[galery_map_size[0] + padding_size], [-padding_size], [0.]] ])
-    img_det = cv.drawFrameAxes(img_det, intrinsics, dist_coeffs, rvec, np.array([0., 0., 1], dtype=np.float32), 0.1)
+
+    aruco_to_world_rot_m = np.array([[1, 0, 0],
+                                     [0, 0, -1],
+                                     [0, 1, 0]])
+    
+    aruco_rot_m = np.zeros((3,3))
+    cv.Rodrigues(aruco_rot_arr[2], aruco_rot_m)
+    rvec_world =  aruco_rot_m @ aruco_to_world_rot_m
+    print(rvec_world)
+    img_det = cv.drawFrameAxes(img_det, intrinsics, dist_coeffs, rvec_world, aruco_pos_arr[2], 0.1)
 
     # if rvecs is not None :
     #     for rvec, tvec, id in zip(rvecs, tvecs, ids) :

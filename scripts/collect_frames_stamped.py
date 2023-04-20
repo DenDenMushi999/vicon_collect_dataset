@@ -18,11 +18,11 @@ def create_dir(path):
     Path(path).mkdir(parents=True, exist_ok=True)
 
 class StampedImagesCollector:
-    def __init__(self, img_topic: str, out_dir, dataset_size=100, fps=10):
+    def __init__(self, img_topic: str, out_dir, time_collect=60):
         self.img_topic = img_topic
         self.out_dir = out_dir
-        self.dataset_size = dataset_size
-        self.fps = fps
+        self.time_collect = time_collect
+        # self.fps = fps
 
         self.count = 0
         self.is_finished = False
@@ -43,10 +43,10 @@ class StampedImagesCollector:
         else:
             self.count += 1
             self.last_time = time.time() - self.t_start
-            self.last_frame = img
-            if ( self.count <= self.dataset_size or self.dataset_size < 0):
-                self.times_arr.append(self.last_time)
+            if ( self.last_time < self.time_collect):
+                self.last_frame = img
                 cv.imwrite( str(self.out_dir/'image_0'/(str(self.count-1).zfill(6) + '.png')), self.last_frame)
+                self.times_arr.append(self.last_time)
             else:
                 rospy.loginfo('Collecting dataset is finished. Saving all results...')
                 if not self.is_finished:
@@ -88,16 +88,16 @@ def main():
 
     parser.add_argument('--img_topic', type=str, default='/camera0/color/image_raw', help='topic where images are published')
     parser.add_argument('--out_dir', type=str, help='where to save dataset')
-    parser.add_argument('--dataset_size', type=int, default=250, help='number of images in dataset')
-    parser.add_argument('--fps', type=int, default=15, help='fps in output dataset')
+    parser.add_argument('--time_collect', type=int, default=60, help='total time to collect dataset in sec.')
+    # parser.add_argument('--fps', type=int, default=15, help='fps in output dataset')
 
     args = parser.parse_args()
     img_topic = args.img_topic
     out_dir = args.out_dir
-    dataset_size = args.dataset_size
+    time_collect = args.time_collect
     # fps = args.fps
 
-    images_collector = StampedImagesCollector(img_topic, out_dir, dataset_size)
+    images_collector = StampedImagesCollector(img_topic, out_dir, time_collect)
 
     images_collector.start_listen()
 
